@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-gray-900 antialiased m-0 bg-white;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  #root {
+    @apply min-h-screen;
+  }
+}
