@@ -5,8 +5,6 @@ import clsx from "clsx";
 const navLinks = [
   { path: "/portfolio", label: "Portfolios" },
   { path: "/",          label: "Screener" },
-  { path: "/latest",    label: "Latest" },
-  { path: "/ideas",     label: "Ideas" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
