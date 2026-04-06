@@ -252,7 +252,7 @@ def start_scheduler():
     # Daily price fetch — Sunday–Thursday at 18:30 IL time (after TASE close)
     scheduler.add_job(
         daily_price_job,
-        CronTrigger(day_of_week="sun-thu", hour=18, minute=30, timezone="Asia/Jerusalem"),
+        CronTrigger(day_of_week="sun,mon,tue,wed,thu", hour=18, minute=30, timezone="Asia/Jerusalem"),
         id="daily_price_job",
         replace_existing=True,
     )

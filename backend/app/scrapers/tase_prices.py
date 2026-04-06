@@ -30,10 +30,12 @@ TASE_SECURITIES_URL = f"{settings.TASE_API_BASE_URL}/security/list"
 TASE_HISTORY_URL = f"{settings.TASE_API_BASE_URL}/security/trading/history"
 TASE_MARKET_CAP_URL = f"{settings.TASE_API_BASE_URL}/security/marketcap"
 
-# TASE API requires an Accept header
+# TASE API requires browser-like headers (returns 403 otherwise)
 TASE_HEADERS = {
-    "Accept": "application/json",
+    "Accept": "application/json, text/plain, */*",
     "Content-Type": "application/json",
+    "Origin": "https://www.tase.co.il",
+    "Referer": "https://www.tase.co.il/",
 }
 
 
