@@ -12,6 +12,25 @@ export interface ScreenerRow {
   safety_score: number | null;
   payout_ratio: number | null;
   debt_to_equity: number | null;
+  // extended fields
+  beta?: number | null;
+  pe_ratio?: number | null;
+  valuation?: string | null;
+  div_growth_1y?: number | null;
+  div_growth_5y?: number | null;
+  div_growth_10y?: number | null;
+  div_growth_streak?: number | null;
+  uninterrupted_streak?: number | null;
+  ex_div_date?: string | null;
+  payment_frequency?: string | null;
+  payment_schedule?: string | null;
+  credit_rating?: string | null;
+  net_debt_to_capital?: number | null;
+  net_debt_to_ebitda?: number | null;
+  free_cash_flow?: number | null;
+  roic?: number | null;
+  recession_dividend?: string | null;
+  recession_return?: number | null;
 }
 
 export interface ScreenerResponse {

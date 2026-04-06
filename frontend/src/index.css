@@ -4,8 +4,8 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased m-0;
-    font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+    @apply text-gray-900 antialiased m-0 bg-white;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   #root {
     @apply min-h-screen;

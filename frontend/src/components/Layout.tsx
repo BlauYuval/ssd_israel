@@ -1,64 +1,75 @@
 import { Link, useLocation } from "react-router-dom";
-import { BarChart2, BriefcaseBusiness } from "lucide-react";
+import { TrendingUp, Search } from "lucide-react";
 import clsx from "clsx";
 
-const tabs = [
-  { path: "/",          label: "Screener",  Icon: BarChart2 },
-  { path: "/portfolio", label: "Portfolio", Icon: BriefcaseBusiness },
+const navLinks = [
+  { path: "/portfolio", label: "Portfolios" },
+  { path: "/",          label: "Screener" },
+  { path: "/latest",    label: "Latest" },
+  { path: "/ideas",     label: "Ideas" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* ── Header ── */}
-      <header className="bg-brand-800 text-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            <div className="bg-white rounded-md p-1.5">
-              <BarChart2 className="w-5 h-5 text-brand-800" />
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* ── Top nav ── */}
+      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 flex items-center h-14 gap-8">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <div className="rounded p-1" style={{ backgroundColor: "#0038B8" }}>
+              <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-semibold tracking-tight">
-              TASE Dividend Screener
+            <span className="text-xs font-bold leading-tight text-gray-800 uppercase tracking-tight">
+              TASE<br />DIVIDENDS
             </span>
+          </Link>
+
+          {/* Nav links */}
+          <nav className="flex items-center gap-1 flex-1">
+            {navLinks.map(({ path, label }) => {
+              const active = pathname === path;
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  className={clsx(
+                    "px-3 py-1.5 text-sm font-medium rounded transition-colors",
+                    active ? "text-gray-900 font-semibold" : "text-gray-500 hover:text-gray-800"
+                  )}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Search */}
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Find a stock or fund"
+              className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-200 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:border-transparent transition"
+              style={{ "--tw-ring-color": "#0038B8" } as React.CSSProperties}
+            />
           </div>
-          <span className="text-brand-200 text-sm hidden sm:block">
-            Israeli Stocks · Tel Aviv Stock Exchange
-          </span>
+
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0" style={{ backgroundColor: "#0038B8" }}>
+            Y
+          </div>
         </div>
       </header>
 
-      {/* ── Tab bar ── */}
-      <nav className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1">
-          {tabs.map(({ path, label, Icon }) => {
-            const active = pathname === path;
-            return (
-              <Link
-                key={path}
-                to={path}
-                className={clsx(
-                  "flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors",
-                  active
-                    ? "border-brand-700 text-brand-700"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-
       {/* ── Page content ── */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
         {children}
       </main>
 
-      <footer className="bg-white border-t border-gray-200 text-center text-xs text-gray-400 py-3">
+      <footer className="border-t border-gray-200 bg-white text-center text-xs text-gray-400 py-3">
         TASE Dividend Screener · Data sourced from Maya &amp; TASE official APIs · Not investment advice
       </footer>
     </div>
