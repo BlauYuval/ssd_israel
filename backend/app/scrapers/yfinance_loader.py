@@ -28,35 +28,68 @@ TASE_STOCKS = [
     ("POLI.TA",   "POLI",   "Financials"),
     ("MZTF.TA",   "MZTF",   "Financials"),
     ("FIBI.TA",   "FIBI",   "Financials"),
-    ("DSCT.TA",   "DSCT",   "Financials"),   # Bank Discount
-    # Insurance
+    ("DSCT.TA",   "DSCT",   "Financials"),
+    # Insurance & Financial Services
     ("PHOE.TA",   "PHOE",   "Financials"),
     ("MGDL.TA",   "MGDL",   "Financials"),
-    ("IDBH.TA",   "IDBH",   "Financials"),
+    ("CLIS.TA",   "CLIS",   "Financials"),
+    ("MNRV.TA",   "MNRV",   "Financials"),
+    ("HARL.TA",   "HARL",   "Financials"),
     # Real Estate
     ("AMOT.TA",   "AMOT",   "Real Estate"),
     ("ALHE.TA",   "ALHE",   "Real Estate"),
     ("ILCO.TA",   "ILCO",   "Real Estate"),
-    ("GVNM.TA",   "GVNM",   "Real Estate"),  # Gav-Yam
+    ("AZRG.TA",   "AZRG",   "Real Estate"),
+    ("NFTA.TA",   "NFTA",   "Real Estate"),
+    ("ISRS.TA",   "ISRS",   "Real Estate"),
+    ("ELCO.TA",   "ELCO",   "Real Estate"),
+    ("AZRT.TA",   "AZRT",   "Real Estate"),
+    ("BRAN.TA",   "BRAN",   "Real Estate"),
+    ("AFRE.TA",   "AFRE",   "Real Estate"),
+    ("EMCO.TA",   "EMCO",   "Real Estate"),
+    ("WLFD.TA",   "WLFD",   "Real Estate"),
+    ("CRSR.TA",   "CRSR",   "Real Estate"),
+    ("ILDC.TA",   "ILDC",   "Real Estate"),
+    ("GNRS.TA",   "GNRS",   "Real Estate"),
+    ("MLSR.TA",   "MLSR",   "Real Estate"),
+    ("DIMRI.TA",  "DIMRI",  "Real Estate"),
+    ("SLARL.TA",  "SLARL",  "Real Estate"),
+    ("SKLN.TA",   "SKLN",   "Real Estate"),
     # Telecom
     ("BEZQ.TA",   "BEZQ",   "Communication"),
     ("PTNR.TA",   "PTNR",   "Communication"),
-    # Materials / Energy
+    ("CEL.TA",    "CEL",    "Communication"),
+    # Materials / Chemicals
     ("ICL.TA",    "ICL",    "Materials"),
+    ("PCBT.TA",   "PCBT",   "Industrials"),
+    # Energy
     ("DLEKG.TA",  "DLEKG",  "Energy"),
     ("ENLT.TA",   "ENLT",   "Energy"),
-    ("OGLD.TA",   "OGLD",   "Energy"),       # Oil & Gas
+    ("SPEN.TA",   "SPEN",   "Energy"),
+    ("NOFR.TA",   "NOFR",   "Energy"),
+    ("OPCE.TA",   "OPCE",   "Energy"),
     # Defense
     ("ESLT.TA",   "ESLT",   "Defense"),
-    ("RAFAEL.TA", "RAFAEL", "Defense"),
     # Technology
     ("NICE.TA",   "NICE",   "Technology"),
-    ("MNDO.TA",   "MNDO",   "Technology"),   # MIND C.T.I.
+    ("TSEM.TA",   "TSEM",   "Technology"),
+    ("AUDC.TA",   "AUDC",   "Technology"),
+    ("CAMT.TA",   "CAMT",   "Technology"),
+    ("GILT.TA",   "GILT",   "Technology"),
+    ("ORBI.TA",   "ORBI",   "Technology"),
+    ("RSEL.TA",   "RSEL",   "Technology"),
     # Health Care
     ("TEVA.TA",   "TEVA",   "Health Care"),
-    ("PMCN.TA",   "PMCN",   "Health Care"),  # Medigus? or Pharmos
-    # Consumer / Other
-    ("BCOM.TA",   "BCOM",   "Consumer Discretionary"),
+    ("CGEN.TA",   "CGEN",   "Health Care"),
+    ("BRMG.TA",   "BRMG",   "Health Care"),
+    # Industrials / Other
+    ("ELAL.TA",   "ELAL",   "Industrials"),
+    ("AFHL.TA",   "AFHL",   "Industrials"),
+    ("KRUR.TA",   "KRUR",   "Industrials"),
+    ("HRON.TA",   "HRON",   "Industrials"),
+    ("FTAL.TA",   "FTAL",   "Consumer Discretionary"),
+    ("PLCR.TA",   "PLCR",   "Industrials"),
+    ("ISCN.TA",   "ISCN",   "Real Estate"),
 ]
 
 
