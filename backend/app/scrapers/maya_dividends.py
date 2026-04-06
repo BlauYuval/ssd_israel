@@ -143,22 +143,6 @@ async def fetch_dividends_for_company(
             break
 
 
-async def scrape_all_dividends() -> AsyncGenerator[DividendEvent, None]:
-    """
-    Full scrape: iterate every TASE company and yield all dividend events.
-    This is the entry point for the daily Maya watcher job.
-    """
-    async with build_client() as client:
-        companies = await fetch_company_list(client)
-        for company in companies:
-            tase_id = str(company.get("companyId") or company.get("CompanyId") or "")
-            if not tase_id:
-                continue
-            logger.info("Scraping dividends for company %s", tase_id)
-            async for event in fetch_dividends_for_company(client, tase_id):
-                yield event
-
-
 async def scrape_recent_dividends(days_back: int = 7) -> AsyncGenerator[DividendEvent, None]:
     """
     Lightweight daily check: fetch only events with ex_date in the last N days.
