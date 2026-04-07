@@ -251,8 +251,20 @@ def fetch_dividends(code: str) -> list[DividendRecord]:
             if amount_raw is None or amount_raw <= 0:
                 continue
 
-            currency = row.get("currency", "ILA")
-            amount_ils = amount_raw * ILA_TO_ILS if currency == "ILA" else amount_raw
+            # EODHD returns TASE (.TA) dividend values in ILA (agoras).
+            # The `currency` field sometimes says "ILS" (the ISO code) even
+            # though the value is still quoted in agoras — so we always divide
+            # by 100 for .TA stocks, regardless of the currency label.
+            # Exception: USD-denominated TASE stocks keep their USD value and
+            # would need a separate FX conversion (not yet implemented).
+            currency = (row.get("currency") or "ILA").upper()
+            if currency == "USD":
+                # USD-denominated stock on TASE — store raw (USD); yield calc
+                # will be inaccurate but at least not off by 100x.
+                amount_ils = amount_raw
+            else:
+                # "ILA", "ILS", or anything else → treat as agoras
+                amount_ils = amount_raw * ILA_TO_ILS
 
             ex_date = _parse_date(row.get("date"))
             if ex_date is None:
