@@ -172,8 +172,15 @@ async def weekly_dividend_job():
         async with AsyncSessionLocal() as db:
             for i in range(0, len(rows), 500):
                 chunk = rows[i: i + 500]
-                stmt = pg_insert(Dividend).values(chunk).on_conflict_do_nothing(
-                    index_elements=["stock_id", "ex_date"]
+                ins = pg_insert(Dividend).values(chunk)
+                stmt = ins.on_conflict_do_update(
+                    index_elements=["stock_id", "ex_date"],
+                    set_=dict(
+                        amount_ils=ins.excluded.amount_ils,
+                        payment_date=ins.excluded.payment_date,
+                        record_date=ins.excluded.record_date,
+                        declared_date=ins.excluded.declared_date,
+                    )
                 )
                 await db.execute(stmt)
             await db.commit()

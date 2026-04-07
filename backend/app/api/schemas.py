@@ -20,6 +20,14 @@ class ScreenerRow(BaseModel):
     safety_score: float | None           # 0–100
     payout_ratio: float | None           # fraction (0.45 = 45%)
     debt_to_equity: float | None
+    # Dividend growth (computed from dividend history)
+    div_growth_1y: float | None          # YoY growth %, prior full year vs year before
+    div_growth_5y: float | None          # 5-year CAGR %
+    div_growth_10y: float | None         # 10-year CAGR %
+    div_growth_streak: int | None        # consecutive years of dividend growth
+    uninterrupted_streak: int | None     # consecutive years with any dividend paid
+    ex_div_date: str | None              # most recent or next upcoming ex-date
+    payment_frequency: str | None        # Monthly / Quarterly / Semi-Annual / Annual / Irregular
 
 
 class ScreenerResponse(BaseModel):

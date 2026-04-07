@@ -133,6 +133,9 @@ async def get_screener(
         if safety_max is not None and (safety is None or safety > safety_max):
             continue
 
+        g1y, g5y, g10y, streak, uninterrupted = await _calc_div_growth(db, row["id"])
+        ex_div_date, payment_frequency = await _calc_ex_div_info(db, row["id"])
+
         enriched.append(ScreenerRow(
             id=row["id"],
             ticker=row["ticker"],
@@ -147,6 +150,13 @@ async def get_screener(
             safety_score=safety,
             payout_ratio=row["payout_ratio"],
             debt_to_equity=row["debt_to_equity"],
+            div_growth_1y=g1y,
+            div_growth_5y=g5y,
+            div_growth_10y=g10y,
+            div_growth_streak=streak,
+            uninterrupted_streak=uninterrupted,
+            ex_div_date=ex_div_date,
+            payment_frequency=payment_frequency,
         ))
 
     # Sort
@@ -156,7 +166,7 @@ async def get_screener(
         "safety_score": "safety_score",
         "payout_ratio": "payout_ratio",
         "market_cap": "market_cap",
-        "div_growth": "dividend_yield",  # placeholder until growth is stored
+        "div_growth": "div_growth_1y",
     }
     sort_key = sort_key_map.get(sort_by, "dividend_yield")
     enriched.sort(
@@ -237,3 +247,126 @@ async def _calc_safety_score(db: AsyncSession, stock_id: int, fund_row) -> float
         years_of_consecutive_dividends=years_paying,
     )
     return calculate(inp).total
+
+
+async def _calc_div_growth(
+    db: AsyncSession, stock_id: int
+) -> tuple[float | None, float | None, float | None, int | None, int | None]:
+    """
+    Returns (div_growth_1y, div_growth_5y, div_growth_10y, growth_streak, uninterrupted_streak).
+
+    Uses calendar-year dividend totals.  The base year is the last fully completed
+    calendar year (today.year - 1) so partial-year data doesn't distort the ratios.
+    """
+    from datetime import date
+
+    result = await db.execute(
+        select(
+            func.extract("year", Dividend.ex_date).label("yr"),
+            func.sum(Dividend.amount_ils).label("total"),
+        )
+        .where(Dividend.stock_id == stock_id)
+        .group_by(func.extract("year", Dividend.ex_date))
+        .order_by(func.extract("year", Dividend.ex_date).desc())
+    )
+    rows = result.all()
+    if not rows:
+        return None, None, None, None, None
+
+    year_map: dict[int, float] = {int(r.yr): float(r.total) for r in rows}
+
+    base_year = date.today().year - 1  # last complete calendar year
+    base_div = year_map.get(base_year)
+    if not base_div or base_div <= 0:
+        return None, None, None, None, None
+
+    def _cagr(past_div: float | None, n: int) -> float | None:
+        if past_div and past_div > 0 and base_div and base_div > 0:
+            return round(((base_div / past_div) ** (1 / n) - 1) * 100, 1)
+        return None
+
+    div_growth_1y = _cagr(year_map.get(base_year - 1), 1)
+    div_growth_5y = _cagr(year_map.get(base_year - 5), 5)
+    div_growth_10y = _cagr(year_map.get(base_year - 10), 10)
+
+    # Growth streak: consecutive years (back from base_year) where div increased YoY
+    sorted_years = sorted([y for y in year_map if y <= base_year], reverse=True)
+    growth_streak = 0
+    for i in range(len(sorted_years) - 1):
+        y, prev_y = sorted_years[i], sorted_years[i + 1]
+        if y != prev_y + 1:
+            break  # gap in data
+        if year_map[y] > year_map[prev_y]:
+            growth_streak += 1
+        else:
+            break
+
+    # Uninterrupted streak: consecutive years with any dividend payment
+    uninterrupted = 0
+    for i, y in enumerate(sorted_years):
+        if year_map.get(y, 0) > 0:
+            uninterrupted += 1
+        else:
+            break
+        if i + 1 < len(sorted_years) and sorted_years[i + 1] != y - 1:
+            break  # gap in years
+
+    return (
+        div_growth_1y,
+        div_growth_5y,
+        div_growth_10y,
+        growth_streak if growth_streak > 0 else None,
+        uninterrupted if uninterrupted > 0 else None,
+    )
+
+
+async def _calc_ex_div_info(
+    db: AsyncSession, stock_id: int
+) -> tuple[str | None, str | None]:
+    """Returns (ex_div_date as ISO string, payment_frequency label)."""
+    from datetime import date, timedelta
+
+    today = date.today()
+
+    # Next upcoming ex-date, or fall back to most recent past one
+    result = await db.execute(
+        select(Dividend.ex_date)
+        .where(Dividend.stock_id == stock_id)
+        .where(Dividend.ex_date >= today)
+        .order_by(Dividend.ex_date.asc())
+        .limit(1)
+    )
+    ex_date = result.scalar()
+    if ex_date is None:
+        result = await db.execute(
+            select(Dividend.ex_date)
+            .where(Dividend.stock_id == stock_id)
+            .order_by(Dividend.ex_date.desc())
+            .limit(1)
+        )
+        ex_date = result.scalar()
+
+    ex_div_date = ex_date.isoformat() if ex_date else None
+
+    # Payment frequency based on average payments per year over last 3 years
+    cutoff = today - timedelta(days=3 * 365)
+    result = await db.execute(
+        select(func.count())
+        .where(Dividend.stock_id == stock_id)
+        .where(Dividend.ex_date >= cutoff)
+    )
+    count_3y = result.scalar() or 0
+    avg = count_3y / 3.0
+
+    if avg >= 10:
+        frequency = "Monthly"
+    elif avg >= 3.5:
+        frequency = "Quarterly"
+    elif avg >= 1.7:
+        frequency = "Semi-Annual"
+    elif avg >= 0.8:
+        frequency = "Annual"
+    else:
+        frequency = "Irregular"
+
+    return ex_div_date, frequency
