@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/tase_screener"
     DATABASE_SYNC_URL: str = "postgresql://postgres:password@localhost:5432/tase_screener"
 
+    EODHD_API_KEY: str = ""
+
     MAYA_BASE_URL: str = "https://maya.tase.co.il"
     TASE_API_BASE_URL: str = "https://api.tase.co.il/api"
 
