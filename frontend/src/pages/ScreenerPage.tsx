@@ -173,6 +173,17 @@ const ALL_COLUMNS: ColDef[] = [
     key: "price", label: "Price", defaultVisible: false, align: "right",
     render: (r) => <span className="text-sm text-gray-700">{fmt.ils(r.price)}</span>,
   },
+  {
+    key: "data_accuracy", label: "Data Accuracy", defaultVisible: true, align: "center",
+    render: (r) => {
+      const q = r.data_accuracy === "Questionable";
+      return (
+        <span className={`text-xs font-medium px-2 py-0.5 rounded ${q ? "bg-amber-100 text-amber-700" : "bg-green-50 text-green-700"}`}>
+          {q ? "⚠ Questionable" : "✓ Accurate"}
+        </span>
+      );
+    },
+  },
 ];
 
 // ── Safety filter presets ─────────────────────────────────────────────────────

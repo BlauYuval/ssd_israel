@@ -28,6 +28,7 @@ class ScreenerRow(BaseModel):
     uninterrupted_streak: int | None     # consecutive years with any dividend paid
     ex_div_date: str | None              # most recent or next upcoming ex-date
     payment_frequency: str | None        # Monthly / Quarterly / Semi-Annual / Annual / Irregular
+    data_accuracy: str | None            # "Accurate" | "Questionable" (outlier dividend detected)
 
 
 class ScreenerResponse(BaseModel):

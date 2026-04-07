@@ -135,6 +135,7 @@ async def get_screener(
 
         g1y, g5y, g10y, streak, uninterrupted = await _calc_div_growth(db, row["id"])
         ex_div_date, payment_frequency = await _calc_ex_div_info(db, row["id"])
+        accuracy = await _calc_data_accuracy(db, row["id"])
 
         enriched.append(ScreenerRow(
             id=row["id"],
@@ -157,6 +158,7 @@ async def get_screener(
             uninterrupted_streak=uninterrupted,
             ex_div_date=ex_div_date,
             payment_frequency=payment_frequency,
+            data_accuracy=accuracy,
         ))
 
     # Sort
@@ -370,3 +372,34 @@ async def _calc_ex_div_info(
         frequency = "Irregular"
 
     return ex_div_date, frequency
+
+
+async def _calc_data_accuracy(db: AsyncSession, stock_id: int) -> str:
+    """
+    Returns "Questionable" if any dividend paid in the last 12 months looks like
+    an outlier (>5× the median of all historical payments), otherwise "Accurate".
+    Stocks with fewer than 3 historical payments are not flagged.
+    """
+    from datetime import date, timedelta
+    import statistics
+
+    result = await db.execute(
+        select(Dividend.ex_date, Dividend.amount_ils)
+        .where(Dividend.stock_id == stock_id)
+        .order_by(Dividend.ex_date)
+    )
+    all_divs = result.all()
+    if len(all_divs) < 3:
+        return "Accurate"
+
+    all_amounts = [float(d.amount_ils) for d in all_divs]
+    median = statistics.median(all_amounts)
+    if median <= 0:
+        return "Accurate"
+
+    cutoff = date.today() - timedelta(days=365)
+    recent_amounts = [float(d.amount_ils) for d in all_divs if d.ex_date >= cutoff]
+
+    if any(amt > median * 5 for amt in recent_amounts):
+        return "Questionable"
+    return "Accurate"

@@ -31,6 +31,7 @@ export interface ScreenerRow {
   roic?: number | null;
   recession_dividend?: string | null;
   recession_return?: number | null;
+  data_accuracy?: string | null;
 }
 
 export interface ScreenerResponse {
